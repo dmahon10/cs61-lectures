@@ -1,11 +1,8 @@
-BASEPROGRAMS = array0 array1 struct0 struct1 struct2 struct3 \
-	union0 localvar0
-PROGRAMS = $(BASEPROGRAMS)
-all: $(PROGRAMS)
+BASEPROGRAMS = arraysum listinsert vectorinsert vectorinsert-binsearch
+all: $(BASEPROGRAMS)
 
-ALLPROGRAMS = $(BASEPROGRAMS) $(wildcard $(patsubst %,%-O?,$(BASEPROGRAMS)))
+ALLPROGRAMS = $(BASEPROGRAMS) $(patsubst %,%-O0,$(BASEPROGRAMS))
 
-COMPILER ?= clang
 include ../common/rules.mk
 
 %.o: %.cc $(BUILDSTAMP)
@@ -17,14 +14,12 @@ include ../common/rules.mk
 %-O2.o: %.cc $(BUILDSTAMP)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -O2 $(DEPCFLAGS) -o $@ -c $<
 
-$(BASEPROGRAMS): %: %.o hexdump.o
+$(BASEPROGRAMS): %: %.o arrayinfo.o hexdump.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(O) -o $@ $^
 
-$(patsubst %,%-O0,$(BASEPROGRAMS)): %: %.o hexdump.o
+$(patsubst %,%-O0,$(BASEPROGRAMS)): %: %.o arrayinfo.o hexdump.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(O) -o $@ $^
 
-$(patsubst %,%-O2,$(BASEPROGRAMS)): %: %.o hexdump.o
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -O3 -o $@ $^
 
 clean:
 	rm -rf $(ALLPROGRAMS) *.o $(DEPSDIR)
